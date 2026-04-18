@@ -452,6 +452,7 @@ pyrightconfig.json
 # .idea/modules
 # *.iml
 # *.ipr
+.idea/*
 
 # CMake
 
