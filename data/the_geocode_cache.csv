@@ -5,8 +5,8 @@ Massachusetts Institute of Technology,42.3582529,-71.0966272
 Stanford University,37.4313138,-122.1693654
 Princeton University,40.3386752,-74.6583655
 University of Oxford,51.7525461,-1.21433
-University of Cambridge,52.1890916,0.1212977
-"University of California, Berkeley",37.8754996,-122.2390685
+University of Cambridge,52.2109456,0.092005
+"University of California, Berkeley",37.868658,-122.2559343
 Imperial College London,51.4989595,-0.1756407
 Yale University,41.2571306,-72.9896696
 "University of California, Los Angeles",34.0708777,-118.4468503
@@ -26,12 +26,12 @@ Duke University,36.0001557,-78.9442297
 Northwestern University,42.0557157,-87.6752945
 The University of Tokyo,35.9019845,139.9362283
 Georgia Institute of Technology,33.7760948,-84.3988077
-Pohang University of Science and Technology (POSTECH),,
+Pohang University of Science and Technology (POSTECH),36.014,129.3224
 "University of California, Santa Barbara",34.4146025,-119.84581
 University of North Carolina at Chapel Hill,35.9050354,-79.0477533
 University of British Columbia,49.2484638,-123.2341555
 "University of California, San Diego",32.8792438,-117.2311247
-University of Illinois at Urbana-Champaign,,
+University of Illinois at Urbana-Champaign,40.102,-88.2272
 National University of Singapore,1.2959845,103.7766186
 McGill University,45.5068861,-73.5787118
 University of Melbourne,-37.8241371,144.9170886
@@ -44,7 +44,7 @@ The Hong Kong University of Science and Technology,22.3358031,114.2659088
 Karolinska Institute,59.2195496,17.9400549
 Australian National University,-35.2812742,149.1172023
 University of Wisconsin,44.5328424,-87.9198844
-University of Göttingen,,
+University of Göttingen,51.5586,9.9294
 Rice University,29.7167915,-95.4047811
 École Polytechnique Fédérale de Lausanne,46.5186594,6.5665615
 University of Science and Technology of China,31.839072,117.2642075
@@ -64,20 +64,20 @@ LMU Munich,48.1521649,11.581535
 University of Notre Dame,41.7045678,-86.2382203
 University of Pittsburgh-Pittsburgh campus,41.9448381,-78.6729545
 Case Western Reserve University,41.501387,-81.6007022
-Ohio State University (Main campus),,
+Ohio State University (Main campus),40.0076,-83.03
 University of Colorado Boulder,40.0070061,-105.2664423
 "University of California, Santa Cruz",37.0001245,-122.0622122
 Yeshiva University,40.8489807,-73.9298403
 University of Bristol,51.4905582,-2.6304825
 The University of Sydney,-33.8889073,151.1894111
-University of Virginia (Main campus),,
+University of Virginia (Main campus),38.0336,-78.508
 University of Southern California,34.021869,-118.2858579
 University of Adelaide,-34.9189226,138.6042367
 William & Mary,37.2690934,-76.7220509
 Trinity College Dublin,53.3437061,-6.2544278
 King’s College London,51.5030855,-0.0900021
 Stony Brook University,40.9090809,-73.1205518
-Korea Advanced Institute of Science and Technology (KAIST),,
+Korea Advanced Institute of Science and Technology (KAIST),36.3741,127.36
 University of Sussex,50.8674377,-0.0877259
 University of York,53.9453903,-1.0314593
 The University of Queensland,-27.497418,153.0131666
@@ -86,7 +86,7 @@ University of Utah,40.7628137,-111.8368719
 Durham University,54.7672268,-1.5721956
 London School of Economics and Political Science,51.5146063,-0.1164509
 University of Manchester,53.4660226,-2.2330858
-"Royal Holloway, University of London",,
+"Royal Holloway, University of London",51.4254,-0.566
 Lund University,55.7126504,13.2107587
 Wake Forest University,36.133893,-80.2755578
 University of Zurich,47.4968435,8.7298072
@@ -103,18 +103,18 @@ Technical University of Munich,48.2654976,11.6692249
 University of Helsinki,60.2267221,25.01767
 University of St Andrews,56.3398554,-2.8117775
 Rensselaer Polytechnic Institute,42.7298969,-73.6796678
-Rutgers University – New Brunswick,40.4698799,-74.4259106
+Rutgers University – New Brunswick,40.4976786,-74.4460046
 Purdue University West Lafayette,40.430028,-86.9264211
 University of Cape Town,-33.9567558,18.4675777
 National Tsing Hua University,24.7916987,120.9924295
-Penn State (Main campus),40.2030819,-76.7425749
+Penn State (Main campus),40.7982,-77.8599
 Seoul National University,37.4668979,126.9477791
 Hong Kong Baptist University,22.337988,114.1826259
 Tokyo Institute of Technology,35.6050487,139.682751
 Bilkent University,39.8704691,32.7539193
 Eindhoven University of Technology,51.4486602,5.4903996
 National Taiwan University (NTU),25.0168175,121.5384571
-University of Hawai’i at Mānoa,21.3005016,-157.8212168
+University of Hawai’i at Mānoa,21.3005327,-157.8210958
 "University of California, Riverside",33.9727335,-117.3474449
 University of Geneva,46.1985541,6.1509888
 KU Leuven,50.8057129,3.2915374
@@ -131,17 +131,17 @@ Stockholm University,59.366141,18.059593
 Osaka University,34.5111992,135.631448
 University of Victoria,48.46206,-123.3114198
 University of Freiburg,48.0070218,7.837321
-Tohoku University,38.2541921,140.8407024
+Tohoku University,38.2533239,140.8742108
 University of Iowa,41.6311024,-91.540752
 University of Bergen,60.3809342,5.3313021
 University of Lausanne,46.5225695,6.5809499
 University of Sheffield,53.3729622,-1.5059315
-University of Montreal,45.508393,-73.580417
+University of Montreal,45.5062952,-73.5763648
 Vrije Universiteit Amsterdam,52.3340539,4.8651882
 University of Dundee,56.4579676,-2.9821483
-Pierre and Marie Curie University,,
+Pierre and Marie Curie University,48.8481,2.3567
 University of Barcelona,41.3868596,2.1634784
-Utrecht University,52.0942343,5.1211881
+Utrecht University,52.0928174,5.1211367
 Wageningen University & Research,51.985445,5.663212
 University of Auckland,-36.8660955,174.7737331
 University of Birmingham,52.4522956,-1.9312857
@@ -152,7 +152,7 @@ Hong Kong Polytechnic University,22.3027216,114.1780446
 Delft University of Technology,51.9988274,4.3739604
 "Birkbeck, University of London",51.5218449,-0.1302155
 Newcastle University,54.9801751,-1.6146802
-UNSW Sydney,-33.9062434,151.2346568
+UNSW Sydney,-33.9175994,151.2312369
 Pompeu Fabra University,41.4043275,2.1937054
 Indiana University,39.1802358,-86.5093526
 Iowa State University,42.0279608,-93.6447375
@@ -167,7 +167,7 @@ University of Liverpool,53.4072429,-2.9658337
 University of Amsterdam,52.3681334,4.8898042
 Aarhus University,56.1670905,10.2026177
 University of Leeds,53.8057925,-1.555111
-University of Würzburg,,
+University of Würzburg,49.7816,9.9726
 University of Groningen,53.2194416,6.5629863
 Sun Yat-sen University,23.0996034,113.2923509
 Goethe University Frankfurt,50.1723275,8.6307298
@@ -188,7 +188,7 @@ University of Konstanz,47.6899569,9.1882624
 Karlsruhe Institute of Technology,49.1018534,8.4331202
 University of Innsbruck,47.263287,11.3844497
 University of Tübingen,48.5340595,9.0712444
-Yonsei University,37.2800965,127.901503
+Yonsei University,37.567836,126.9393747
 University of Cincinnati – Uptown,39.1318991,-84.5157575
 Drexel University,39.9569305,-75.1899265
 Dalhousie University,44.6362011,-63.5919961
@@ -206,7 +206,7 @@ University of Bern,46.9509726,7.4386841
 Hebrew University of Jerusalem,31.7918555,35.244723
 University of Florida,29.6411884,-82.3562296
 Brandeis University,42.3665095,-71.2580196
-Free University of Berlin,,
+Free University of Berlin,52.4536,13.2955
 Chinese University of Hong Kong,22.4140914,114.2100208
 University of Warwick,52.3813073,-1.5639569
 Radboud University Nijmegen,51.8215173,5.8634329
@@ -215,19 +215,19 @@ Texas A&M University,30.6108618,-96.3520606
 University of Reading,51.4404358,-0.9417618
 Tel Aviv University,32.1123577,34.8050129
 Université Catholique de Louvain,50.8212043,4.3495585
-Paris Diderot University – Paris 7,,
+Paris Diderot University – Paris 7,48.8277,2.3814
 University of Miami,25.7172725,-80.2787069
-Queen’s University,44.2331009,-76.4914971
+Queen’s University,44.2263489,-76.4957555
 University of São Paulo,-23.561048,-46.7252264
 University of Oslo,59.9414173,10.7227683
 University of Ottawa,45.4225271,-75.6833904
 The University of Western Australia,-35.0274825,117.8871021
 City University of Hong Kong,22.3400205,114.1697162
 Maastricht University,50.8472117,5.6859518
-University of Leicester,52.6175241,-1.1377672
+University of Leicester,52.6087006,-1.114824
 Paris-Sud University,48.8359184,2.2533598
 University of Texas at Dallas,32.9875855,-96.749784
-Joseph Fourier University,,
+Joseph Fourier University,45.1933,5.768
 Colorado School of Mines,39.7386338,-105.2246389
 University of Antwerp,51.1843856,4.4199387
 Technion Israel Institute of Technology,32.7768128,35.0225446
@@ -254,15 +254,15 @@ Charité - Universitätsmedizin Berlin,52.5299885,13.3486639
 University of Trento,46.0661807,11.1166177
 Queen’s University Belfast,54.5842881,-5.9336562
 University of Mannheim,49.483885,8.4708736
-University of Erlangen-Nuremberg,,
+University of Erlangen-Nuremberg,49.5975,11.0045
 University of Luxembourg,49.5036259,5.9487155
 University of Duisburg-Essen,51.4290899,6.800858
-Technical University of Berlin,,
+Technical University of Berlin,52.5122,13.3267
 University of Alabama at Birmingham,33.5016153,-86.8060476
 Aalto University,60.1860789,24.8281018
 Tilburg University,51.5630609,5.0435985
 Paris-Sorbonne University – Paris 4,48.8494092,2.3482761
-Paris Sciences et Lettres – PSL Research University Paris,,
+Paris Sciences et Lettres – PSL Research University Paris,48.8502,2.3445
 Sorbonne University,48.8468997,2.3574487
 University of Bologna,44.4982886,11.354457
 Shanghai Jiao Tong University,31.2008912,121.4283949
@@ -271,7 +271,7 @@ Korea University,36.6108894,127.2934174
 Université Paris Cité,48.8514684,2.341089
 Télécom Paris,48.7131108,2.199685
 University of Canberra,-35.2365904,149.0845097
-Yonsei University (Seoul campus),,
+Yonsei University (Seoul campus),37.5665,126.9388
 University of Hamburg,53.564106,9.9949809
 Queensland University of Technology,-27.542195,153.0649526
 Institut Polytechnique de Paris,48.7139028,2.2141075
@@ -283,5 +283,5 @@ Medical University of Graz,47.0808781,15.4692124
 Université Paris-Saclay,48.7121501,2.1735087
 Ulsan National Institute of Science and Technology (UNIST),35.5735512,129.1899352
 University of Münster,51.9673422,7.5992433
-Sapienza University of Rome,,
+Sapienza University of Rome,41.9038,12.5152
 Chalmers University of Technology,57.6897462,11.9765259

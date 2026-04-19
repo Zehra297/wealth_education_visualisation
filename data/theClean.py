@@ -46,6 +46,45 @@ COUNTRY_OVERRIDES = {
     "Macao":                        "MAC",
 }
 
+GEOCODE_OVERRIDES = {
+    "Pohang University of Science and Technology (POSTECH)":
+        (36.0140, 129.3224),
+    "University of Illinois at Urbana-Champaign":
+        (40.1020, -88.2272),
+    "University of Göttingen":
+        (51.5586, 9.9294),
+    "Ohio State University (Main campus)":
+        (40.0076, -83.0300),
+    "University of Virginia (Main campus)":
+        (38.0336, -78.5080),
+    "Korea Advanced Institute of Science and Technology (KAIST)":
+        (36.3741, 127.3600),
+    "Royal Holloway, University of London":
+        (51.4254, -0.5660),
+    "Pierre and Marie Curie University":
+        (48.8481, 2.3567),
+    "University of Würzburg":
+        (49.7816, 9.9726),
+    "Free University of Berlin":
+        (52.4536, 13.2955),
+    "Paris Diderot University – Paris 7":
+        (48.8277, 2.3814),
+    "Joseph Fourier University":
+        (45.1933, 5.7680),
+    "University of Erlangen-Nuremberg":
+        (49.5975, 11.0045),
+    "Technical University of Berlin":
+        (52.5122, 13.3267),
+    "Paris Sciences et Lettres – PSL Research University Paris":
+        (48.8502, 2.3445),
+    "Yonsei University (Seoul campus)":
+        (37.5665, 126.9388),
+    "Sapienza University of Rome":
+        (41.9038, 12.5152),
+    "Penn State (Main campus)":
+        (40.7982, -77.8599),
+}
+
 # ── ISO lookup ─────────────────────────────────────────────────────────────────
 
 def get_iso3(name: str) -> str | None:
@@ -242,6 +281,9 @@ def geocode_universities(df: pd.DataFrame) -> pd.DataFrame:
     print(f"Geocoding {total} universities (cached: {len(cache)})...")
 
     for i, (_, row) in enumerate(to_geocode.iterrows(), 1):
+        if row["name"] in GEOCODE_OVERRIDES:
+            cache[row["name"]] = GEOCODE_OVERRIDES[row["name"]]
+            continue
         query = f"{row['name']}, {row['country']}"
         try:
             location = geolocator.geocode(query, timeout=10)
