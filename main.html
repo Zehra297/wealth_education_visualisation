@@ -2,43 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Impact of Wealth vs Education on Research Output</title>
+    <title>Impact of Wealth vs Education on University Locations</title>
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://d3js.org/topojson.v3.js"></script>
-    <style>
-        #main-map-container {
-            width: 95%;
-            margin: 0 auto;
-        }
-        svg {
-            width: 100%;
-            height: auto;
-        }
-        path {
-            fill: #fff;
-            stroke-width: 0.5px;
-            stroke: #000;
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-    <h1>Wealth vs Education- What has a Bigger Impact on Top University Locations?</h1>
+    <h1>Wealth vs Education - What has a Bigger Impact on Top University Locations?</h1>
+
+    <div id="parameter-selectors">
+        <div id="rank-selectors">
+            <label>
+                <input type="radio" name="rank-selector" value="the" checked="checked">
+                THE University Rankings (Top 200)
+            </label>
+            <label>
+                <input type="radio" name="rank-selector" value="scimago">
+                SCImago Research Rankings
+            </label>
+        </div>
+        <div class="select-group">
+            <label for="indicator-selectors">Indicators</label>
+            <select id="indicator-selectors">
+                <optgroup label="Wealth">
+                    <option value="gdp">GDP per capita</option>
+                    <option value="gni">GNI per capita</option>
+                </optgroup>
+                <optgroup label="Education">
+                    <option value="gov_spend">Government Expenditure on Education (% of GDP)</option>
+                    <option value="lit_rate">Literacy Rate (Adult)</option>
+                    <option value="pri_comp">Primary Completion Rate</option>
+                    <option value="pri_pupil_teacher">Primary Pupil: Teacher</option>
+                    <option value="sec_pupil_teacher">Secondary Pupil: Teacher</option>
+                    <option value="pri_enrol">Primary Enrolment Rate</option>
+                    <option value="sec_enrol">Secondary Enrolment Rate</option>
+                    <option value="ter_enrol">Tertiary Enrolment Rate</option>
+                </optgroup>
+            </select>
+        </div>
+    </div>
     <div id="main-map-container">
         <svg id="main-map"></svg>
+    </div>
+    <div id="time-controls">
+        <button id="play-btn">&#9654;</button>
+        <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011"/>
+        <span id="year-display">2011</span>
     </div>
 <script type="text/javascript">
     let container = document.getElementById("main-map-container");
     let svg = d3.select("#main-map");
+    let timeline = document.getElementById("timeline");
+    let yearDisplay = document.getElementById("year-display");
+    const HEIGHT_RATIO = 0.5
+    const SCALE = 6.5
     let projection, path;
 
+    // Draws Winkel Triple Choropleth Map
     async function drawMap() {
         let width  = container.clientWidth;
-        let height = width * 0.5;
+        let height = width * HEIGHT_RATIO;
         svg.attr("height", height);
 
         projection = d3.geoWinkel3()
-            .scale(width / 6.5)
+            .scale(width / SCALE)
             .translate([width / 2, height / 2]);
 
         path = d3.geoPath().projection(projection);
@@ -51,18 +79,36 @@
             .attr("d", path);
     }
 
+    // Resizes map on screen resize
     function resizeMap() {
         let width  = container.clientWidth;
-        let height = width * 0.5;
+        let height = width * HEIGHT_RATIO;
         svg.attr("height", height);
 
         projection
-            .scale(width / 6.5)
+            .scale(width / SCALE)
             .translate([width / 2, height / 2]);
 
         svg.selectAll("path").attr("d", path);
     }
 
+    // Writes year corresponding to timeline selection
+    timeline.addEventListener("input", () => {yearDisplay.textContent = timeline.value;});
+
+    // Changes range of timeline depending on the ranking metric selected
+    document.querySelectorAll("input[name='rank-selector']").forEach(radio => {
+        radio.addEventListener("change", (e) => {
+            if (e.target.value === "scimago") {
+                timeline.min = 1996;
+            } else {
+                timeline.min = 2011;
+                if (+timeline.value < 2011) timeline.value = 2011;
+            }
+            yearDisplay.textContent = timeline.value;
+        });
+    });
+
+    // Listener for window resizing
     const observer = new ResizeObserver(() => resizeMap());
     observer.observe(container);
 

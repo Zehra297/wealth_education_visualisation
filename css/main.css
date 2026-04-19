@@ -1,0 +1,39 @@
+#parameter-selectors{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+#rank-selectors{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+/*#rank-selector{}*/
+#main-map-container {
+    width: 95%;
+    margin: 0 auto;
+}
+svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+path {
+    fill: #fff;
+    stroke-width: 0.5px;
+    stroke: #000;
+}
+#time-controls{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top:0.75rem;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+#timeline{
+    flex: 1;
+}
