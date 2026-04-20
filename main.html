@@ -47,10 +47,12 @@
     </div>
     <div id="time-controls">
         <button id="play-btn">&#9654;</button>
-        <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011"/>
+        <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011">
         <span id="year-display">2011</span>
     </div>
 <script type="text/javascript">
+    let datasets = {}
+    let currentDataSubset = new Map()
     let container = document.getElementById("main-map-container");
     let svg = d3.select("#main-map");
     let timeline = document.getElementById("timeline");
@@ -58,6 +60,104 @@
     const HEIGHT_RATIO = 0.5
     const SCALE = 6.5
     let projection, path;
+
+    const INDICATORS = {
+        gdp: {
+            label: "GDP per capita",
+            scheme: d3.schemeBlues[7],
+            format: d => "$" + d3.format(",.0f")(d)
+        },
+        gni: {
+            label: "GNI per capita",
+            scheme: d3.schemeBlues[7],
+            format: d => "$" + d3.format(",.0f")(d)
+        },
+        gov_spend:{
+            label: "Government education spending (% GDP)",
+            scheme: d3.schemeGreens[7],
+            format: d3.format(".1f") },
+        lit_rate:{
+            label: "Literacy rate (adult)",
+            scheme: d3.schemeGreens[7],
+            format: d3.format(".1f")
+        },
+        pri_comp:          { label: "Primary completion rate",               scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
+        pri_pupil_teacher: { label: "Pupil-teacher ratio (primary)",         scheme: d3.schemeOranges[7], format: d3.format(".1f") },
+        sec_pupil_teacher: { label: "Pupil-teacher ratio (secondary)",       scheme: d3.schemeOranges[7], format: d3.format(".1f") },
+        pri_enrol:         { label: "Primary enrolment rate",                scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
+        sec_enrol:         { label: "Secondary enrolment rate",              scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
+        ter_enrol:         { label: "Tertiary enrolment rate",               scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
+    };
+
+    // Load all required data once on start up
+    async function loadData() {
+        const [gdp, gni, education, the, scimago] = await Promise.all([
+            d3.csv("data/gdp-per-capita-worldbank.csv"),
+            d3.csv("data/gross-national-income-per-capita-worldbank.csv"),
+            d3.csv("data/world-education-data.csv"),
+            d3.csv("data/the_combined.csv"),
+            d3.csv("data/scimago_combined.csv")
+        ]);
+        datasets.the = formatTHEData(the)
+        datasets.scimago = formatScimagoData(scimago)
+        datasets.gdp = formatData(gdp, "numeric_code", "Year", "GDP per capita")
+        datasets.gni = formatData(gni, "numeric_code", "Year", "GNI per capita")
+        datasets.gov_spend = formatData(education, "numeric_code", "year", "gov_exp_pct_gdp")
+        datasets.lit_rate    = formatData(education, "numeric_code", "year", "lit_rate_adult_pct");
+        datasets.pri_comp    = formatData(education, "numeric_code", "year", "pri_comp_rate_pct");
+        datasets.pri_pupil_teacher = formatData(education, "numeric_code", "year", "pupil_teacher_primary");
+        datasets.sec_pupil_teacher = formatData(education, "numeric_code", "year", "pupil_teacher_secondary");
+        datasets.pri_enrol   = formatData(education, "numeric_code", "year", "school_enrol_primary_pct");
+        datasets.sec_enrol   = formatData(education, "numeric_code", "year", "school_enrol_secondary_pct");
+        datasets.ter_enrol   = formatData(education, "numeric_code", "year", "school_enrol_tertiary_pct");
+    }
+
+    // Data formatting for indicators: Map(#ISO -> (year -> val))
+    function formatData(data, isoCol, yearCol, valCol){
+        const dataMap = new Map();
+        data.forEach(d => {
+            let iso = d[isoCol];
+            let year = +d[yearCol];
+            let val = d[valCol] === "" ? null : +d[valCol];
+            if (!iso || isNaN(year) || val === null) return;
+            if (!dataMap.has(iso)) dataMap.set(iso, new Map());
+            dataMap.get(iso).set(year, val);
+        });
+        return dataMap;
+    }
+
+    function formatTHEData(data){
+        const dataMap = new Map();
+        data.forEach(d => {
+            let year = +d.year;
+            let lat = +d.lat;
+            let lon = +d.lon;
+            if (isNaN(year) || isNaN(lat) || isNaN(lon)) return;
+            if (!dataMap.has(year)) dataMap.set(year, []);
+            dataMap.get(year).push({
+                name: d.name,
+                iso: d.numeric_code,
+                rank: +d.rank,
+                lat: lat,
+                lon: lon,
+            })
+        })
+        return dataMap;
+    }
+
+    function formatScimagoData(data){
+        const dataMap = new Map();
+        data.forEach(d => {
+            let year = +d.year;
+            if (isNaN(year)) return;
+            if (!dataMap.has(year)) dataMap.set(year, []);
+            dataMap.get(year).push({
+                iso: d.numeric_code,
+                rank: +d.rank,
+            })
+        })
+        return dataMap;
+    }
 
     // Draws Winkel Triple Choropleth Map
     async function drawMap() {
@@ -107,6 +207,8 @@
             yearDisplay.textContent = timeline.value;
         });
     });
+
+    //TODO: Play Button Transition thing
 
     // Listener for window resizing
     const observer = new ResizeObserver(() => resizeMap());
