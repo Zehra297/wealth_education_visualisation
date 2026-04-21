@@ -1,5 +1,7 @@
 <!--TODO: Add comments-->
 <!--TODO: Add the resources and data processing page-->
+<!--TODO: Comparison-->
+<!--TODO: Potentially add zoom-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,25 +47,31 @@
         </div>
     </div>
     <div id="main-map-container">
-        <svg id="main-map"></svg>
+        <svg id="main-map-frame"></svg>
     </div>
     <div id="time-controls">
         <button id="play-btn">&#9654;</button>
         <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011">
         <span id="year-display">2011</span>
     </div>
+    <div id="tooltip">
+        <div class="tt-country"></div>
+        <div class="tt-value"></div>
+    </div>
 <script type="text/javascript">
-    let datasets = {}
-    let centres = new Map()
+    let datasets = {};
+    let centres = new Map();
+    let countryNames = new Map();
     let container = document.getElementById("main-map-container");
-    let svg = d3.select("#main-map");
+    let svg = d3.select("#main-map-frame");
+    let tooltip = document.getElementById("tooltip");
     let timeline = document.getElementById("timeline");
     let yearDisplay = document.getElementById("year-display");
-    const HEIGHT_RATIO = 0.5
-    const SCALE = 6.5
+    const HEIGHT_RATIO = 0.5;
+    const SCALE = 6.5;
     let projection, path, colourMap;
-    let currentIndicator = "gdp"
-    const theRadiusScale = d3.scaleSqrt().domain([1, 200]).range([8, 2]);
+    let currentIndicator = "gdp";
+    const theRadiusScale = d3.scaleSqrt().domain([1, 200]).range([9, 2]);
 
     const INDICATORS = {
         gdp: {
@@ -236,12 +244,14 @@
 
         // Calculate centre point of each country for SCImago
         countries.features.forEach(d => {
+            const id = String(d.id).padStart(3, "0");
+            countryNames.set(id, d.properties.name);
             const centre = path.centroid(d);
-            if (!isNaN(centre[0])) centres.set(String(d.id).padStart(3, "0"), centre);
+            if (!isNaN(centre[0])) centres.set(id, centre);
         })
         colourMap = createColourMap(currentIndicator);
 
-        d3.select("#main-map").selectAll("path")
+        d3.select("#main-map-frame").selectAll("path")
         .data(countries.features)
             .join("path")
             .attr("d", path)
@@ -249,7 +259,10 @@
                 const id  = String(d.id).padStart(3, "0");
                 const val = datasets[currentIndicator].get(id)?.get(+timeline.value);
                 return val == null ? "#ddd" : colourMap(val);
-            });
+            })
+            .on("mouseover", d => showCountryTooltip(d))
+            .on("mousemove", () => moveTooltip())
+            .on("mouseleave", () => hideTooltip());
         updateMarkers();
     }
 
@@ -288,6 +301,9 @@
                 .attr("cx", d => projection([d.lon, d.lat])[0])
                 .attr("cy", d => projection([d.lon, d.lat])[1])
                 .attr("r",  d => theRadiusScale(d.rank))
+                .on("mouseover", showTHETooltip)
+                .on("mousemove", moveTooltip)
+                .on("mouseleave", hideTooltip);
         } else {
             const countries = datasets.scimago.get(year) ?? [];
             numRanks = d3.max(countries, d => d.rank)
@@ -299,8 +315,53 @@
                 .attr("cx", d => centres.get(d.iso)[0])
                 .attr("cy", d => centres.get(d.iso)[1])
                 .attr("r",  d => scimagoRadiusScale(d.rank))
+                .on("mouseover", showScimagoTooltip)
+                .on("mousemove", moveTooltip)
+                .on("mouseleave", hideTooltip);
         }
     }
+
+    function showCountryTooltip(d) {
+        const iso    = String(d.id).padStart(3, "0");
+        const val   = datasets[currentIndicator].get(iso)?.get(+timeline.value);
+        const name  = countryNames.get(iso) ?? "Unknown";
+        const indicator = INDICATORS[currentIndicator];
+
+        tooltip.querySelector(".tt-country").textContent = name;
+        tooltip.querySelector(".tt-value").innerHTML = val != null
+            ? `<strong>${indicator.label}:</strong> ${indicator.format(val)}`
+            : `<span class="tt-null">No data collected</span>`;
+
+        moveTooltip();
+        tooltip.classList.add("visible");
+    }
+
+    function showTHETooltip(d) {
+        tooltip.querySelector(".tt-country").textContent = d.name;
+        tooltip.querySelector(".tt-value").innerHTML = `<strong>THE Rank:</strong> #${d.rank}`;
+        moveTooltip();
+        tooltip.classList.add("visible");
+    }
+
+    function showScimagoTooltip(d) {
+        tooltip.querySelector(".tt-country").textContent = countryNames.get(d.iso) ?? "Unknown";
+        tooltip.querySelector(".tt-value").innerHTML = `<strong>SCImago Rank:</strong> #${d.rank}`;
+        moveTooltip();
+        tooltip.classList.add("visible");
+    }
+
+    function moveTooltip() {
+        const pad = 12;
+        let x = d3.event.clientX + pad;
+        let y = d3.event.clientY + pad;
+        // Prevent overflow off the right/bottom edge
+        if (x + 230 > window.innerWidth)  x = d3.event.clientX - 230;
+        if (y + 80  > window.innerHeight) y = d3.event.clientY - 80;
+        tooltip.style.left = x + "px";
+        tooltip.style.top  = y + "px";
+    }
+
+    function hideTooltip() {tooltip.classList.remove("visible");}
 
     // Resizes map on screen resize
     function resizeMap() {
