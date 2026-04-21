@@ -21,7 +21,6 @@ svg {
     display: block;
 }
 path {
-    fill: #fff;
     stroke-width: 0.5px;
     stroke: #000;
 }

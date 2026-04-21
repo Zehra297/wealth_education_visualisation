@@ -1,3 +1,5 @@
+<!--TODO: Add comments-->
+<!--TODO: Add the resources and data processing page-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,12 +34,12 @@
                 <optgroup label="Education">
                     <option value="gov_spend">Government Expenditure on Education (% of GDP)</option>
                     <option value="lit_rate">Literacy Rate (Adult)</option>
-                    <option value="pri_comp">Primary Completion Rate</option>
-                    <option value="pri_pupil_teacher">Primary Pupil: Teacher</option>
-                    <option value="sec_pupil_teacher">Secondary Pupil: Teacher</option>
-                    <option value="pri_enrol">Primary Enrolment Rate</option>
-                    <option value="sec_enrol">Secondary Enrolment Rate</option>
-                    <option value="ter_enrol">Tertiary Enrolment Rate</option>
+                    <option value="pri_comp">Completion Rate (Primary)</option>
+                    <option value="pri_pupil_teacher">Pupil: Teacher (Primary)</option>
+                    <option value="sec_pupil_teacher">Pupil: Teacher (Secondary)</option>
+                    <option value="pri_enrol">Enrolment Rate (Primary)</option>
+                    <option value="sec_enrol">Enrolment Rate (Secondary)</option>
+                    <option value="ter_enrol">Enrolment Rate (Tertiary)</option>
                 </optgroup>
             </select>
         </div>
@@ -59,34 +61,72 @@
     let yearDisplay = document.getElementById("year-display");
     const HEIGHT_RATIO = 0.5
     const SCALE = 6.5
-    let projection, path;
+    let projection, path, colourMap;
+    let currentIndicator = "gdp"
 
     const INDICATORS = {
         gdp: {
             label: "GDP per capita",
-            scheme: d3.schemeBlues[7],
-            format: d => "$" + d3.format(",.0f")(d)
+            scheme: ["#feebe2", "#fbb4b9", "#f768a1", "#c51b8a", "#7a0177"],
+            scale: "threshold",
+            bins: [1135, 4465, 13845, 50000],
+            format: d => "$" + d3.format(",.2f")(d)
         },
         gni: {
             label: "GNI per capita",
-            scheme: d3.schemeBlues[7],
-            format: d => "$" + d3.format(",.0f")(d)
+            scheme: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
+            scale: "threshold",
+            bins: [1135, 4465, 13845, 50000],
+            format: d => "$" + d3.format(",.2f")(d)
         },
-        gov_spend:{
-            label: "Government education spending (% GDP)",
-            scheme: d3.schemeGreens[7],
-            format: d3.format(".1f") },
-        lit_rate:{
-            label: "Literacy rate (adult)",
-            scheme: d3.schemeGreens[7],
-            format: d3.format(".1f")
+        gov_spend: {
+            label: "Government Expenditure on Education (% of GDP)",
+            scheme: ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"],
+            scale: "quantize",
+            format: d3.format(".2f")
         },
-        pri_comp:          { label: "Primary completion rate",               scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
-        pri_pupil_teacher: { label: "Pupil-teacher ratio (primary)",         scheme: d3.schemeOranges[7], format: d3.format(".1f") },
-        sec_pupil_teacher: { label: "Pupil-teacher ratio (secondary)",       scheme: d3.schemeOranges[7], format: d3.format(".1f") },
-        pri_enrol:         { label: "Primary enrolment rate",                scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
-        sec_enrol:         { label: "Secondary enrolment rate",              scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
-        ter_enrol:         { label: "Tertiary enrolment rate",               scheme: d3.schemeGreens[7],  format: d3.format(".1f") },
+        lit_rate: {
+            label: "Literacy Rate (Adult)",
+            scheme: ["#ffffcc", "#c2e699", "#78c679", "#31a354", "#006837"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        pri_comp:{
+            label: "Completion Rate (Primary)",
+            scheme: ["#f6eff7", "#bdc9e1", "#67a9cf", "#1c9099", "#016c59"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        pri_pupil_teacher: {
+            label: "Pupil: Teacher (Primary)",
+            scheme: ["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        sec_pupil_teacher: {
+            label: "Pupil: Teacher (Secondary)",
+            scheme: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        pri_enrol: {
+            label: "Enrolment Rate (Primary)",
+            scheme: ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        sec_enrol: {
+            label: "Enrolment Rate (Secondary)",
+            scheme: ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
+        ter_enrol: {
+            label: "Enrolment Rate (Tertiary)",
+            scheme: ["#f1eef6", "#bdc9e1", "#74a9cf", "#2b8cbe", "#045a8d"],
+            scale: "quantize",
+            format: d3.format(".2f")
+        },
     };
 
     // Load all required data once on start up
@@ -126,6 +166,7 @@
         return dataMap;
     }
 
+    // Data formatting for THE: Map(year -> [ISO, uniName, rank, latitude, longitude])
     function formatTHEData(data){
         const dataMap = new Map();
         data.forEach(d => {
@@ -145,6 +186,7 @@
         return dataMap;
     }
 
+    // Data formatting for SCImago: Map(year -> [ISO, rank])
     function formatScimagoData(data){
         const dataMap = new Map();
         data.forEach(d => {
@@ -159,7 +201,21 @@
         return dataMap;
     }
 
+    function createColourMap(indicator){
+        const selectedIndicator = INDICATORS[indicator];
+        const dataset = datasets[indicator];
+        const data = [];
+        dataset.forEach(yearMap => {yearMap.forEach(d => {data.push(d)})});
+        if(selectedIndicator.scale === "threshold"){
+            return d3.scaleThreshold().domain(selectedIndicator.bins).range(selectedIndicator.scheme)
+        }
+        else{
+            return d3.scaleQuantize().domain([d3.min(data), d3.max(data)]).range(selectedIndicator.scheme);
+        }
+    }
+
     // Draws Winkel Triple Choropleth Map
+    //TODO: Add dashed lines for nulls
     async function drawMap() {
         let width  = container.clientWidth;
         let height = width * HEIGHT_RATIO;
@@ -171,12 +227,38 @@
 
         path = d3.geoPath().projection(projection);
 
-        const countriesTopo = await d3.json("data/countries-50m.json");
+        const [countriesTopo] = await Promise.all([
+            d3.json("data/countries-50m.json"),
+            loadData()
+        ]);
         const countries = topojson.feature(countriesTopo, countriesTopo.objects.countries);
+
+        colourMap = createColourMap(currentIndicator);
+
         d3.select("#main-map").selectAll("path")
         .data(countries.features)
             .join("path")
-            .attr("d", path);
+            .attr("d", path)
+            .attr("fill", d => {
+                const id  = String(d.id).padStart(3, "0");
+                const val = datasets[currentIndicator].get(id)?.get(+timeline.value);
+                return val == null ? "#ddd" : colourMap(val);
+            });
+    }
+
+    function updateMap() {
+        const year    = +timeline.value;
+        const lookup  = datasets[currentIndicator];
+
+        svg.selectAll("path")
+            .transition()
+            .duration(200)
+            .attr("fill", d => {
+                // get numeric code from world-atlas TopoJSON
+                const id  = String(d.id).padStart(3, "0");
+                const val = lookup.get(id)?.get(year);
+                return val == null ? "#ddd" : colourMap(val);
+            });
     }
 
     // Resizes map on screen resize
@@ -192,8 +274,17 @@
         svg.selectAll("path").attr("d", path);
     }
 
-    // Writes year corresponding to timeline selection
-    timeline.addEventListener("input", () => {yearDisplay.textContent = timeline.value;});
+    document.getElementById("indicator-selectors").addEventListener("change", function() {
+        currentIndicator = this.value;
+        colourMap = createColourMap(currentIndicator);
+        updateMap();
+    });
+
+    // Writes year + changes data subset corresponding to timeline selection
+    timeline.addEventListener("input", () => {
+        yearDisplay.textContent = timeline.value;
+        updateMap();
+    });
 
     // Changes range of timeline depending on the ranking metric selected
     document.querySelectorAll("input[name='rank-selector']").forEach(radio => {
