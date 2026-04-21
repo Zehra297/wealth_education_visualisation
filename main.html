@@ -46,8 +46,16 @@
             </select>
         </div>
     </div>
-    <div id="main-map-container">
-        <svg id="main-map-frame"></svg>
+    <div id="map-scale-container">
+        <div id="main-map-container">
+            <svg id="main-map-frame"></svg>
+        </div>
+        <div id="scale">
+            <div id="scale-title"></div>
+            <table id="scale-bins">
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
     <div id="time-controls">
         <button id="play-btn">&#9654;</button>
@@ -246,7 +254,7 @@
         countries.features.forEach(d => {
             const id = String(d.id).padStart(3, "0");
             countryNames.set(id, d.properties.name);
-            const centre = path.centroid(d);
+            const centre = d3.geoCentroid(d);
             if (!isNaN(centre[0])) centres.set(id, centre);
         })
         colourMap = createColourMap(currentIndicator);
@@ -264,6 +272,7 @@
             .on("mousemove", () => moveTooltip())
             .on("mouseleave", () => hideTooltip());
         updateMarkers();
+        createScale();
     }
 
     function update(){
@@ -312,8 +321,8 @@
                 .data(countries.filter(d => centres.has(d.iso)))
                 .join("circle")
                 .attr("class", "marker")
-                .attr("cx", d => centres.get(d.iso)[0])
-                .attr("cy", d => centres.get(d.iso)[1])
+                .attr("cx", d => projection(centres.get(d.iso))[0])
+                .attr("cy", d => projection(centres.get(d.iso))[1])
                 .attr("r",  d => scimagoRadiusScale(d.rank))
                 .on("mouseover", showScimagoTooltip)
                 .on("mousemove", moveTooltip)
@@ -377,10 +386,50 @@
         updateMarkers();
     }
 
+    function createScale() {
+        const indicator = INDICATORS[currentIndicator];
+        document.getElementById("scale-title").textContent = indicator.label;
+        const tbody = document.querySelector("#scale-bins tbody");
+        tbody.innerHTML = "";
+
+        const dollarFmt = d3.format(",.0f");
+
+        if (indicator.scale === "threshold") {
+            // Bins define the boundaries — build one label per colour band
+            const boundaries = [0, ...indicator.bins, Infinity];
+            indicator.scheme.forEach((colour, i) => {
+                const low = boundaries[i];
+                const high = boundaries[i + 1];
+                const label = high === Infinity
+                    ? `> $${dollarFmt(low)}`
+                    : low === 0
+                        ? `< $${dollarFmt(high)}`
+                        : `$${dollarFmt(low)} – $${dollarFmt(high)}`;
+                tbody.appendChild(makeRow(colour, label));
+            });
+        } else {
+            indicator.scheme.forEach(colour => {
+                const [low, high] = colourMap.invertExtent(colour);
+                tbody.appendChild(makeRow(colour, `${indicator.format(low)} – ${indicator.format(high)}`));
+            });
+        }
+
+        // No data swatch
+        tbody.appendChild(makeRow("#ddd", "No data"));
+    }
+
+    function makeRow(colour, label) {
+        const tr = document.createElement("tr");
+        // bin.className = "scale-bin";
+        tr.innerHTML = `<td class="scale-swatch" style="background:${colour}"></td><td class="scale-label">${label}</td>`;
+        return tr;
+    }
+
     document.getElementById("indicator-selectors").addEventListener("change", function() {
         currentIndicator = this.value;
         colourMap = createColourMap(currentIndicator);
         update();
+        createScale();
     });
 
     // Writes year + changes data subset corresponding to timeline selection

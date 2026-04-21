@@ -10,10 +10,42 @@
     align-items: center;
     gap: 1rem;
 }
-/*#rank-selector{}*/
-#main-map-container {
-    width: 95%;
+#map-scale-container{
+    display: flex;
+    align-items: flex-start;
+    width:100%;
     margin: 0 auto;
+    gap: 1rem;
+}
+#scale{
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+#scale-title{
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+#scale-bins{
+    border-collapse: collapse;
+    width: 100%;
+}
+.scale-swatch{
+    width: 18px;
+    height: 28px;
+    border: 1px solid #ccc;
+    padding: 0;
+}
+
+.scale-label {
+    padding: 0 0 0 0.4rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+#main-map-container {
+    flex: 1;
+    min-width: 0;
 }
 svg {
     width: 100%;
@@ -54,7 +86,7 @@ path {
     align-items: center;
     gap: 1rem;
     margin-top:0.75rem;
-    width: 95%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
