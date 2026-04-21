@@ -54,7 +54,7 @@
     </div>
 <script type="text/javascript">
     let datasets = {}
-    let currentDataSubset = new Map()
+    let centres = new Map()
     let container = document.getElementById("main-map-container");
     let svg = d3.select("#main-map");
     let timeline = document.getElementById("timeline");
@@ -63,6 +63,7 @@
     const SCALE = 6.5
     let projection, path, colourMap;
     let currentIndicator = "gdp"
+    const theRadiusScale = d3.scaleSqrt().domain([1, 200]).range([8, 2]);
 
     const INDICATORS = {
         gdp: {
@@ -233,6 +234,11 @@
         ]);
         const countries = topojson.feature(countriesTopo, countriesTopo.objects.countries);
 
+        // Calculate centre point of each country for SCImago
+        countries.features.forEach(d => {
+            const centre = path.centroid(d);
+            if (!isNaN(centre[0])) centres.set(String(d.id).padStart(3, "0"), centre);
+        })
         colourMap = createColourMap(currentIndicator);
 
         d3.select("#main-map").selectAll("path")
@@ -244,6 +250,12 @@
                 const val = datasets[currentIndicator].get(id)?.get(+timeline.value);
                 return val == null ? "#ddd" : colourMap(val);
             });
+        updateMarkers();
+    }
+
+    function update(){
+        updateMap();
+        updateMarkers();
     }
 
     function updateMap() {
@@ -261,6 +273,35 @@
             });
     }
 
+    function updateMarkers() {
+        const year   = +timeline.value;
+        const source = document.querySelector("input[name='rank-selector']:checked").value;
+
+        svg.selectAll("circle.marker").remove();
+
+        if (source === "the") {
+            let uniRank = datasets.the.get(year) ?? [];
+            svg.selectAll("circle.marker")
+                .data(uniRank)
+                .join("circle")
+                .attr("class", "marker")
+                .attr("cx", d => projection([d.lon, d.lat])[0])
+                .attr("cy", d => projection([d.lon, d.lat])[1])
+                .attr("r",  d => theRadiusScale(d.rank))
+        } else {
+            const countries = datasets.scimago.get(year) ?? [];
+            numRanks = d3.max(countries, d => d.rank)
+            const scimagoRadiusScale = d3.scaleSqrt().domain([1, numRanks]).range([12, 2]);
+            svg.selectAll("circle.marker")
+                .data(countries.filter(d => centres.has(d.iso)))
+                .join("circle")
+                .attr("class", "marker")
+                .attr("cx", d => centres.get(d.iso)[0])
+                .attr("cy", d => centres.get(d.iso)[1])
+                .attr("r",  d => scimagoRadiusScale(d.rank))
+        }
+    }
+
     // Resizes map on screen resize
     function resizeMap() {
         let width  = container.clientWidth;
@@ -272,18 +313,19 @@
             .translate([width / 2, height / 2]);
 
         svg.selectAll("path").attr("d", path);
+        updateMarkers();
     }
 
     document.getElementById("indicator-selectors").addEventListener("change", function() {
         currentIndicator = this.value;
         colourMap = createColourMap(currentIndicator);
-        updateMap();
+        update();
     });
 
     // Writes year + changes data subset corresponding to timeline selection
     timeline.addEventListener("input", () => {
         yearDisplay.textContent = timeline.value;
-        updateMap();
+        update();
     });
 
     // Changes range of timeline depending on the ranking metric selected
@@ -296,6 +338,7 @@
                 if (+timeline.value < 2011) timeline.value = 2011;
             }
             yearDisplay.textContent = timeline.value;
+            update();
         });
     });
 

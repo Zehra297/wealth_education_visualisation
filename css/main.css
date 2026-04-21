@@ -24,6 +24,12 @@ path {
     stroke-width: 0.5px;
     stroke: #000;
 }
+.marker {
+    opacity: 0.6;
+    fill: #1a1a1a;
+    stroke: #fff;
+    stroke-width: 0.5px;
+}
 #time-controls{
     display: flex;
     align-items: center;
