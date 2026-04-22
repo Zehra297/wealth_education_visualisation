@@ -11,6 +11,11 @@ FILES = [
     {"path": "data/gdp-per-capita-worldbank.csv",                "iso3_col": "Code"},
     {"path": "data/gross-national-income-per-capita-worldbank.csv", "iso3_col": "Code"},
     {"path": "data/world-education-data.csv",                         "iso3_col": "country_code"},
+    {"path": "data/percent-gdp-education-wb.csv",                         "iso3_col": "Country Code"},
+    {"path": "data/literacy-rates-among-adults.csv",                         "iso3_col": "Code"},
+    {"path": "data/primary-secondary-enrollment-completion-rates.csv",                         "iso3_col": "Code"},
+    {"path": "data/pupil-teacher-ratio-wb.csv",                         "iso3_col": "Country Code"},
+    {"path": "data/pupil-teacher-ratio-for-primary-education-by-country.csv",                         "iso3_col": "Code"},
 ]
 
 # ── Lookup ─────────────────────────────────────────────────────────────────────

@@ -1,7 +1,6 @@
 <!--TODO: Add comments-->
 <!--TODO: Add the resources and data processing page-->
 <!--TODO: Comparison-->
-<!--TODO: Potentially add zoom-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -316,7 +315,7 @@
         } else {
             const countries = datasets.scimago.get(year) ?? [];
             numRanks = d3.max(countries, d => d.rank)
-            const scimagoRadiusScale = d3.scaleSqrt().domain([1, numRanks]).range([12, 2]);
+            const scimagoRadiusScale = d3.scaleSqrt().domain([1, numRanks]).range([11, 3]);
             svg.selectAll("circle.marker")
                 .data(countries.filter(d => centres.has(d.iso)))
                 .join("circle")
