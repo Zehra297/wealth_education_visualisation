@@ -12,8 +12,10 @@
     <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-    <h1>Wealth vs Education - What has a Bigger Impact on Top University Locations?</h1>
-
+    <div id="header">
+        <h1>Wealth vs Education - What has a Bigger Impact on Top University Locations?</h1>
+        <a id="data-pg-btn" href="data.html">Data Processing and Sources</a>
+    </div>
     <div id="parameter-selectors">
         <div id="rank-selectors">
             <label>
@@ -236,7 +238,6 @@
     }
 
     // Draws Winkel Triple Choropleth Map
-    //TODO: Add dashed lines for nulls
     async function drawMap() {
         let width  = container.clientWidth;
         let height = width * HEIGHT_RATIO;
@@ -263,6 +264,17 @@
         })
         colourMap = createColourMap(currentIndicator);
 
+        svg.append("defs").append("pattern")
+            .attr("id", "null-pattern")
+            .attr("patternUnits", "userSpaceOnUse")
+            .attr("width", 4)
+            .attr("height", 4)
+            .append("line")
+            .attr("x1", 0).attr("y1", 0)
+            .attr("x2", 4).attr("y2", 4)
+            .attr("stroke", "#aaa")
+            .attr("stroke-width", 1)
+
         d3.select("#main-map-frame").selectAll("path")
         .data(countries.features)
             .join("path")
@@ -270,7 +282,7 @@
             .attr("fill", d => {
                 const id  = String(d.id).padStart(3, "0");
                 const val = datasets[currentIndicator].get(id)?.get(+timeline.value);
-                return val == null ? "#ddd" : colourMap(val);
+                return val == null ? "url(#null-pattern)" : colourMap(val);
             })
             .on("mouseover", d => showCountryTooltip(d))
             .on("mousemove", () => moveTooltip())
@@ -295,7 +307,7 @@
                 // get numeric code from world-atlas TopoJSON
                 const id  = String(d.id).padStart(3, "0");
                 const val = lookup.get(id)?.get(year);
-                return val == null ? "#ddd" : colourMap(val);
+                return val == null ? "url(#null-pattern)" : colourMap(val);
             });
     }
 
@@ -419,13 +431,17 @@
         }
 
         // No data swatch
-        tbody.appendChild(makeRow("#ddd", "No data"));
+        tbody.appendChild(makeRow("url(null-pattern)", "No data"));
     }
 
     function makeRow(colour, label) {
         const tr = document.createElement("tr");
-        // bin.className = "scale-bin";
-        tr.innerHTML = `<td class="scale-swatch" style="background:${colour}"></td><td class="scale-label">${label}</td>`;
+        const fill = colour.startsWith("url")
+            ? `<svg width="18" height="28"><defs><pattern id="null-swatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                <line x1="0" y1="0" x2="4" y2="4" stroke="#aaa" stroke-width="1"/>
+                    </pattern></defs><rect width="18" height="28" fill="url(#null-swatch)" stroke="#ccc" stroke-width="1"/></svg>`
+            : `<svg width="18" height="28"><rect width="18" height="28" fill="${colour}" stroke="#ccc" stroke-width="1"/></svg>`;
+        tr.innerHTML = `<td class="scale-swatch">${fill}</td><td class="scale-label">${label}</td>`;
         return tr;
     }
 

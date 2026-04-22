@@ -1,3 +1,18 @@
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+#data-pg-btn {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: #333;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 1rem;
+}
 #parameter-selectors{
     display: flex;
     align-items: center;
@@ -36,7 +51,9 @@
     border: 1px solid #ccc;
     padding: 0;
 }
-
+.scale-swatch svg {
+    display: block;
+}
 .scale-label {
     padding: 0 0 0 0.4rem;
     font-size: 0.75rem;
