@@ -1,44 +1,35 @@
 import pandas as pd
-import os
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-MAIN_PATH    = "data/world-education-data.csv"
-LIT_PATH     = "data/literacy-rates-among-adults.csv"
+MAIN_PATH  = "data/world-education-data.csv"
+PTR_PATH   = "data/pupil-teacher-ratio-for-primary-education-by-country.csv"
 
-MAIN_COL     = "lit_rate_adult_pct"
-LIT_COL      = "Literacy rate among adults"
-
-JOIN_KEYS    = ["numeric_code", "year"]   # main dataset join keys
-LIT_KEYS     = ["numeric_code", "Year"]   # literacy dataset join keys (note capital Y)
+MAIN_COL   = "pupil_teacher_primary"
+PTR_COL    = "Pupil-qualified teacher ratio in primary education"
 
 # ── Load ───────────────────────────────────────────────────────────────────────
 
 main = pd.read_csv(MAIN_PATH, dtype={"numeric_code": str})
-lit  = pd.read_csv(LIT_PATH,  dtype={"numeric_code": str})
+ptr  = pd.read_csv(PTR_PATH,  dtype={"numeric_code": str})
 
-# Normalise the year column name so both DataFrames share the same key name
-lit = lit.rename(columns={"Year": "year"})
-lit = lit[lit["year"] >= 1996]
+main["numeric_code"] = main["numeric_code"].str.zfill(3)
+ptr["numeric_code"]  = ptr["numeric_code"].str.zfill(3)
 
-main["numeric_code"] = main["numeric_code"].astype(str).str.zfill(3)
-lit["numeric_code"]  = lit["numeric_code"].astype(str).str.zfill(3)
+ptr = ptr.rename(columns={"Year": "year"})
+ptr = ptr[ptr["year"] >= 1996]
 
 # ── Add missing years ──────────────────────────────────────────────────────────
 
-# Get all country identifiers from main
-countries = main[["country", "country_code", "numeric_code"]].drop_duplicates()
-
-# Get the years present in lit that are missing from main (per country)
+countries  = main[["country", "country_code", "numeric_code"]].drop_duplicates()
 main_years = main[["numeric_code", "year"]].drop_duplicates()
-lit_years  = lit[["numeric_code", "year"]].drop_duplicates()
+ptr_years  = ptr[["numeric_code", "year"]].drop_duplicates()
 
-missing = lit_years.merge(main_years, on=["numeric_code", "year"], how="left", indicator=True)
+missing = ptr_years.merge(main_years, on=["numeric_code", "year"], how="left", indicator=True)
 missing = missing[missing["_merge"] == "left_only"].drop(columns="_merge")
 
-# Build new rows with only the key columns filled, everything else null
 new_rows = missing.merge(countries, on="numeric_code", how="left")
-new_rows = new_rows.reindex(columns=main.columns)  # match column order, nulls for the rest
+new_rows = new_rows.reindex(columns=main.columns)
 
 main = pd.concat([main, new_rows], ignore_index=True).sort_values(["country_code", "year"])
 
@@ -49,24 +40,22 @@ main = main[main["numeric_code"].notna() & (main["numeric_code"].str.strip() != 
 after = len(main)
 if before - after:
     print(f"  ⚠ Dropped {before - after:,} rows with missing country identifiers")
+
 # ── Merge & fill ──────────────────────────────────────────────────────────────
 
-lit_slim = lit[["numeric_code", "year", LIT_COL]].copy()
+ptr_slim = ptr[["numeric_code", "year", PTR_COL]].copy()
 
-main = main.merge(lit_slim, on=["numeric_code", "year"], how="left")
+main = main.merge(ptr_slim, on=["numeric_code", "year"], how="left")
 
-# Only fill where the main value is null
-mask = main[MAIN_COL].isna() & main[LIT_COL].notna()
+mask = main[MAIN_COL].isna() & main[PTR_COL].notna()
 filled = mask.sum()
 
-main.loc[mask, MAIN_COL] = main.loc[mask, LIT_COL]
-main = main.drop(columns=[LIT_COL])
+main.loc[mask, MAIN_COL] = main.loc[mask, PTR_COL]
+main = main.drop(columns=[PTR_COL])
 
 # ── Save ───────────────────────────────────────────────────────────────────────
 
 main.to_csv(MAIN_PATH, index=False)
 
-print(f"✓ Filled {filled:,} null values in '{MAIN_COL}' from literacy dataset")
-
-null_remaining = main[MAIN_COL].isna().sum()
-print(f"  Remaining nulls in '{MAIN_COL}': {null_remaining:,}")
+print(f"✓ Filled {filled:,} nulls in '{MAIN_COL}'")
+print(f"  Remaining nulls: {main[MAIN_COL].isna().sum():,}")
