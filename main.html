@@ -1,6 +1,3 @@
-<!--TODO: Add comments-->
-<!--TODO: Add the resources and data processing page-->
-<!--TODO: Comparison-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,61 +9,58 @@
     <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-    <div id="header">
-        <h1>Wealth vs Education - What has a Bigger Impact on Top University Locations?</h1>
-        <a id="data-pg-btn" href="data.html">Data Processing and Sources</a>
+<h1>Wealth vs Education - What has a Bigger Impact on Top University Locations?</h1>
+<div id="parameter-selectors">
+    <div id="rank-selectors">
+        <label>
+            <input type="radio" name="rank-selector" value="the" checked="checked">
+            THE University Rankings (Top 200)
+        </label>
+        <label>
+            <input type="radio" name="rank-selector" value="scimago">
+            SCImago Research Rankings
+        </label>
     </div>
-    <div id="parameter-selectors">
-        <div id="rank-selectors">
-            <label>
-                <input type="radio" name="rank-selector" value="the" checked="checked">
-                THE University Rankings (Top 200)
-            </label>
-            <label>
-                <input type="radio" name="rank-selector" value="scimago">
-                SCImago Research Rankings
-            </label>
-        </div>
-        <div class="select-group">
-            <label for="indicator-selectors">Indicators</label>
-            <select id="indicator-selectors">
-                <optgroup label="Wealth">
-                    <option value="gdp">GDP per capita</option>
-                    <option value="gni">GNI per capita</option>
-                </optgroup>
-                <optgroup label="Education">
-                    <option value="gov_spend">Government Expenditure on Education (% of GDP)</option>
-                    <option value="lit_rate">Literacy Rate (Adult)</option>
-                    <option value="pri_comp">Completion Rate (Primary)</option>
-                    <option value="pri_pupil_teacher">Pupil: Teacher (Primary)</option>
-                    <option value="sec_pupil_teacher">Pupil: Teacher (Secondary)</option>
-                    <option value="pri_enrol">Enrolment Rate (Primary)</option>
-                    <option value="sec_enrol">Enrolment Rate (Secondary)</option>
-                    <option value="ter_enrol">Enrolment Rate (Tertiary)</option>
-                </optgroup>
-            </select>
-        </div>
+    <div class="select-group">
+        <label for="indicator-selectors">Indicators</label>
+        <select id="indicator-selectors">
+            <optgroup label="Wealth">
+                <option value="gdp">GDP per capita</option>
+                <option value="gni">GNI per capita</option>
+            </optgroup>
+            <optgroup label="Education">
+                <option value="gov_spend">Government Expenditure on Education (% of GDP)</option>
+                <option value="lit_rate">Literacy Rate (Adult)</option>
+                <option value="pri_comp">Completion Rate (Primary)</option>
+                <option value="pri_pupil_teacher">Pupil: Teacher (Primary)</option>
+                <option value="sec_pupil_teacher">Pupil: Teacher (Secondary)</option>
+                <option value="pri_enrol">Enrolment Rate (Primary)</option>
+                <option value="sec_enrol">Enrolment Rate (Secondary)</option>
+                <option value="ter_enrol">Enrolment Rate (Tertiary)</option>
+            </optgroup>
+        </select>
     </div>
-    <div id="map-scale-container">
-        <div id="main-map-container">
-            <svg id="main-map-frame"></svg>
-        </div>
-        <div id="scale">
-            <div id="scale-title"></div>
-            <table id="scale-bins">
-                <tbody></tbody>
-            </table>
-        </div>
+</div>
+<div id="map-scale-container">
+    <div id="main-map-container">
+        <svg id="main-map-frame"></svg>
     </div>
-    <div id="time-controls">
-        <button id="play-btn">&#9654;</button>
-        <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011">
-        <span id="year-display">2011</span>
+    <div id="scale">
+        <div id="scale-title"></div>
+        <table id="scale-bins">
+            <tbody></tbody>
+        </table>
     </div>
-    <div id="tooltip">
-        <div class="tt-country"></div>
-        <div class="tt-value"></div>
-    </div>
+</div>
+<div id="time-controls">
+    <button id="play-btn">&#9654;</button>
+    <input type="range" id="timeline" min="2011" max="2023" step="1" value="2011">
+    <span id="year-display">2011</span>
+</div>
+<div id="tooltip">
+    <div class="tt-country"></div>
+    <div class="tt-value"></div>
+</div>
 <script type="text/javascript">
     let datasets = {};
     let centres = new Map();
@@ -90,70 +84,72 @@
             scheme: ["#feebe2", "#fbb4b9", "#f768a1", "#c51b8a", "#7a0177"],
             scale: "threshold",
             bins: [1135, 4465, 13845, 50000],
-            format: d => "$" + d3.format(",.2f")(d)
+            format: d => "$" + d3.format(",.2f")(d),
+            scaleFormat: d => "$" + d3.format(",.0f")(d)
         },
         gni: {
             label: "GNI per capita",
             scheme: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
             scale: "threshold",
             bins: [1135, 4465, 13845, 50000],
-            format: d => "$" + d3.format(",.2f")(d)
+            format: d => "$" + d3.format(",.2f")(d),
+            scaleFormat: d => "$" + d3.format(",.0f")(d)
         },
         gov_spend: {
             label: "Government Expenditure on Education (% of GDP)",
             scheme: ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"],
             scale: "threshold",
             bins: [2, 4, 6, 8],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
         lit_rate: {
             label: "Literacy Rate (Adult)",
             scheme: ["#ffffcc", "#c2e699", "#78c679", "#31a354", "#006837"],
             scale: "threshold",
             bins: [30, 50, 65, 85],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
         pri_comp:{
             label: "Completion Rate (Primary)",
             scheme: ["#f6eff7", "#bdc9e1", "#67a9cf", "#1c9099", "#016c59"],
             scale: "threshold",
             bins: [50, 75, 95, 100],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
         pri_pupil_teacher: {
             label: "Pupil: Teacher (Primary)",
             scheme: ["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"],
             scale: "threshold",
             bins: [20, 35, 50, 70],
-            format: d3.format(".2f")
+            format: d3.format(".0f")
         },
         sec_pupil_teacher: {
             label: "Pupil: Teacher (Secondary)",
             scheme: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
             scale: "threshold",
             bins: [20, 35, 50, 70],
-            format: d3.format(".2f")
+            format: d3.format(".0f")
         },
         pri_enrol: {
             label: "Enrolment Rate (Primary)",
             scheme: ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
             scale: "threshold",
             bins: [75, 90, 100, 110],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
         sec_enrol: {
             label: "Enrolment Rate (Secondary)",
             scheme: ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"],
             scale: "threshold",
             bins: [40, 65, 85, 100],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
         ter_enrol: {
             label: "Enrolment Rate (Tertiary)",
             scheme: ["#f1eef6", "#bdc9e1", "#74a9cf", "#2b8cbe", "#045a8d"],
             scale: "threshold",
             bins: [10, 25, 50, 75],
-            format: d3.format(".2f")
+            format: d => d3.format(".2f")(d) + "%"
         },
     };
 
@@ -171,13 +167,13 @@
         datasets.gdp = formatData(gdp, "numeric_code", "Year", "GDP per capita")
         datasets.gni = formatData(gni, "numeric_code", "Year", "GNI per capita")
         datasets.gov_spend = formatData(education, "numeric_code", "year", "gov_exp_pct_gdp")
-        datasets.lit_rate    = formatData(education, "numeric_code", "year", "lit_rate_adult_pct");
-        datasets.pri_comp    = formatData(education, "numeric_code", "year", "pri_comp_rate_pct");
+        datasets.lit_rate = formatData(education, "numeric_code", "year", "lit_rate_adult_pct");
+        datasets.pri_comp = formatData(education, "numeric_code", "year", "pri_comp_rate_pct");
         datasets.pri_pupil_teacher = formatData(education, "numeric_code", "year", "pupil_teacher_primary");
         datasets.sec_pupil_teacher = formatData(education, "numeric_code", "year", "pupil_teacher_secondary");
-        datasets.pri_enrol   = formatData(education, "numeric_code", "year", "school_enrol_primary_pct");
-        datasets.sec_enrol   = formatData(education, "numeric_code", "year", "school_enrol_secondary_pct");
-        datasets.ter_enrol   = formatData(education, "numeric_code", "year", "school_enrol_tertiary_pct");
+        datasets.pri_enrol = formatData(education, "numeric_code", "year", "school_enrol_primary_pct");
+        datasets.sec_enrol = formatData(education, "numeric_code", "year", "school_enrol_secondary_pct");
+        datasets.ter_enrol = formatData(education, "numeric_code", "year", "school_enrol_tertiary_pct");
     }
 
     // Data formatting for indicators: Map(#ISO -> (year -> val))
@@ -229,6 +225,7 @@
         return dataMap;
     }
 
+    // Creates the colour map
     function createColourMap(indicator){
         const selectedIndicator = INDICATORS[indicator];
         const dataset = datasets[indicator];
@@ -264,19 +261,20 @@
         })
         colourMap = createColourMap(currentIndicator);
 
+        // Defines the dashed pattern for null data
         svg.append("defs").append("pattern")
             .attr("id", "null-pattern")
             .attr("patternUnits", "userSpaceOnUse")
-            .attr("width", 4)
-            .attr("height", 4)
+            .attr("width", 10)
+            .attr("height", 10)
             .append("line")
             .attr("x1", 0).attr("y1", 0)
-            .attr("x2", 4).attr("y2", 4)
+            .attr("x2", 10).attr("y2", 10)
             .attr("stroke", "#aaa")
             .attr("stroke-width", 1)
 
         d3.select("#main-map-frame").selectAll("path")
-        .data(countries.features)
+            .data(countries.features)
             .join("path")
             .attr("d", path)
             .attr("fill", d => {
@@ -291,11 +289,13 @@
         createScale();
     }
 
+    //Called to update map colours and marker positions on year/ indicator change
     function update(){
         updateMap();
         updateMarkers();
     }
 
+    // Updates map colours depending on year and indicator
     function updateMap() {
         const year    = +timeline.value;
         const lookup  = datasets[currentIndicator];
@@ -311,13 +311,14 @@
             });
     }
 
+    // Updates ranking marker position depending on year and ranking indicator
     function updateMarkers() {
         const year   = +timeline.value;
-        const source = document.querySelector("input[name='rank-selector']:checked").value;
+        const markerType = document.querySelector("input[name='rank-selector']:checked").value;
 
         svg.selectAll("circle.marker").remove();
 
-        if (source === "the") {
+        if (markerType === "the") {
             let uniRank = datasets.the.get(year) ?? [];
             svg.selectAll("circle.marker")
                 .data(uniRank)
@@ -346,6 +347,7 @@
         }
     }
 
+    // Returns country name and corresponding value for tooltip
     function showCountryTooltip(d) {
         const iso    = String(d.id).padStart(3, "0");
         const val   = datasets[currentIndicator].get(iso)?.get(+timeline.value);
@@ -361,6 +363,7 @@
         tooltip.classList.add("visible");
     }
 
+    // Returns university name and corresponding ranking for tool tip
     function showTHETooltip(d) {
         tooltip.querySelector(".tt-country").textContent = d.name;
         tooltip.querySelector(".tt-value").innerHTML = `<strong>THE Rank:</strong> #${d.rank}`;
@@ -368,6 +371,7 @@
         tooltip.classList.add("visible");
     }
 
+    // Returns country name and research ranking for tool tip
     function showScimagoTooltip(d) {
         tooltip.querySelector(".tt-country").textContent = countryNames.get(d.iso) ?? "Unknown";
         tooltip.querySelector(".tt-value").innerHTML = `<strong>SCImago Rank:</strong> #${d.rank}`;
@@ -375,6 +379,7 @@
         tooltip.classList.add("visible");
     }
 
+    // Used to move tool tip with mouse
     function moveTooltip() {
         const pad = 12;
         let x = d3.event.clientX + pad;
@@ -386,6 +391,7 @@
         tooltip.style.top  = y + "px";
     }
 
+    // Removes/ hides tooltip once mouse is off the element
     function hideTooltip() {tooltip.classList.remove("visible");}
 
     // Resizes map on screen resize
@@ -408,43 +414,35 @@
         const tbody = document.querySelector("#scale-bins tbody");
         tbody.innerHTML = "";
 
-        const dollarFmt = d3.format(",.0f");
+        const fmt = indicator.scaleFormat ?? indicator.format;
 
-        if (indicator.scale === "threshold") {
-            // Bins define the boundaries — build one label per colour band
-            const boundaries = [0, ...indicator.bins, Infinity];
-            indicator.scheme.forEach((colour, i) => {
-                const low = boundaries[i];
-                const high = boundaries[i + 1];
-                const label = high === Infinity
-                    ? `> ${dollarFmt(low)}`
-                    : low === 0
-                        ? `< ${dollarFmt(high)}`
-                        : `${dollarFmt(low)} – ${dollarFmt(high)}`;
-                tbody.appendChild(makeRow(colour, label));
-            });
-        } else {
-            indicator.scheme.forEach(colour => {
-                const [low, high] = colourMap.invertExtent(colour);
-                tbody.appendChild(makeRow(colour, `${indicator.format(low)} – ${indicator.format(high)}`));
-            });
-        }
-
-        // No data swatch
+        const boundaries = [0, ...indicator.bins, Infinity];
+        indicator.scheme.forEach((colour, i) => {
+            const low = boundaries[i];
+            const high = boundaries[i + 1];
+            const label = high === Infinity
+                ? `> ${fmt(low)}`
+                : low === 0
+                    ? `< ${fmt(high)}`
+                    : `${fmt(low)} – ${fmt(high)}`;
+            tbody.appendChild(makeRow(colour, label));
+        });
+        // Null data swatch
         tbody.appendChild(makeRow("url(null-pattern)", "No data"));
     }
 
     function makeRow(colour, label) {
         const tr = document.createElement("tr");
         const fill = colour.startsWith("url")
-            ? `<svg width="18" height="28"><defs><pattern id="null-swatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                <line x1="0" y1="0" x2="4" y2="4" stroke="#aaa" stroke-width="1"/>
+            ? `<svg width="18" height="28"><defs><pattern id="null-swatch" patternUnits="userSpaceOnUse" width="10" height="10">
+                <line x1="0" y1="0" x2="10" y2="10" stroke="#aaa" stroke-width="1"/>
                     </pattern></defs><rect width="18" height="28" fill="url(#null-swatch)" stroke="#ccc" stroke-width="1"/></svg>`
             : `<svg width="18" height="28"><rect width="18" height="28" fill="${colour}" stroke="#ccc" stroke-width="1"/></svg>`;
         tr.innerHTML = `<td class="scale-swatch">${fill}</td><td class="scale-label">${label}</td>`;
         return tr;
     }
 
+    // Updates the map (colours) on indicator change
     document.getElementById("indicator-selectors").addEventListener("change", function() {
         currentIndicator = this.value;
         colourMap = createColourMap(currentIndicator);
@@ -474,6 +472,7 @@
         });
     });
 
+    // Listener for play button for timeline animation
     playBtn.addEventListener("click", () => {
         if (playRange){
             stopPlaying()
@@ -482,11 +481,9 @@
             playBtn.innerHTML = "&#9646;&#9646;"
             playRange = setInterval(() => {
                 let year = +timeline.value;
-                let max = +timeline.max;
-                let min = +timeline.min;
-                if (year >= max) {
+                if (year >= +timeline.max) {
                     stopPlaying()
-                    year = min;
+                    year = +timeline.min;
                 }
                 else {
                     year += 1;
@@ -498,6 +495,7 @@
         }
     });
 
+    // Reusable function to stop timeline animation
     function stopPlaying(){
         clearInterval(playRange);
         playRange = null;
